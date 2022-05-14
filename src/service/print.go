@@ -3,7 +3,9 @@ package service
 import (
 	"encoding/json"
 	gim "github.com/ozankasikci/go-image-merge"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"zxcv32/capture-maps-api/src/earth"
 	"zxcv32/capture-maps-api/src/file"
@@ -18,11 +20,16 @@ type printRequest struct {
 
 // HandleRequest POST request
 func HandleRequest(writer http.ResponseWriter, request *http.Request) {
+	var requestId = rand.Int()
+	log.Printf("Print request received: %d", requestId)
 	decoder := json.NewDecoder(request.Body)
 	var task printRequest
 	err := decoder.Decode(&task)
 	if err != nil {
-		panic(err)
+		log.Errorln(err)
+		writer.WriteHeader(500)
+		log.Printf("Print request not complete: %d", requestId)
+		return
 	}
 
 	lat, lng, zoom, radius := task.Lat, task.Lng, task.Zoom, task.Radius
@@ -39,6 +46,7 @@ func HandleRequest(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	file.DeleteFile(filename)
+	log.Printf("Print request complete: %d", requestId)
 }
 
 func captureTiles(lat float64, lng float64, zoom int, radius int) string {
