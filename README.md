@@ -27,3 +27,6 @@ POST /print
 
 ![sample response](./assets/response.png)
 
+> What about the watermark?
+> According to [Google Maps Platform Terms of Service](https://cloud.google.com/maps-platform/terms)
+> , the branding, logos, and copyright and trademark notices can not be removed. :'(
