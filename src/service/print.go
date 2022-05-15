@@ -18,11 +18,23 @@ type printRequest struct {
 	Radius int     `json:"radius"`
 }
 
-// HandleRequest POST request
+func setupResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	(*w).Header().Set("Content-Type", "image/png")
+}
+
+// HandleRequest print request
 func HandleRequest(writer http.ResponseWriter, request *http.Request) {
+	setupResponse(&writer, request)
+	if request.Method == "OPTIONS" {
+		return
+	}
 	var requestId = rand.Int()
 	log.Printf("Print request received: %d", requestId)
-	decoder := json.NewDecoder(request.Body)
+	body := request.Body
+	decoder := json.NewDecoder(body)
 	var task printRequest
 	err := decoder.Decode(&task)
 	if err != nil {
@@ -39,7 +51,6 @@ func HandleRequest(writer http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 	writer.WriteHeader(http.StatusOK)
-	writer.Header().Set("Content-Type", "application/octet-stream")
 	_, error := writer.Write(fileBytes)
 	if error != nil {
 		http.Error(writer, error.Error(), 500)
