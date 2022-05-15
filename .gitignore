@@ -17,5 +17,4 @@
 # IDE
 .idea
 
-*.png
 .env
