@@ -11,6 +11,7 @@ import (
 	"zxcv32/capture-maps-api/src/file"
 )
 
+// printRequest struct to accept print request
 type printRequest struct {
 	Lat    float64 `json:"lat"`
 	Lng    float64 `json:"lng"`
@@ -18,7 +19,8 @@ type printRequest struct {
 	Radius int     `json:"radius"`
 }
 
-func setupResponse(w *http.ResponseWriter, req *http.Request) {
+// setupResponse setups all the common HTTP response headers
+func setupResponse(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
@@ -27,7 +29,7 @@ func setupResponse(w *http.ResponseWriter, req *http.Request) {
 
 // HandleRequest print request
 func HandleRequest(writer http.ResponseWriter, request *http.Request) {
-	setupResponse(&writer, request)
+	setupResponse(&writer)
 	if request.Method == "OPTIONS" {
 		return
 	}
@@ -103,7 +105,7 @@ func westToEast(xIndex int, j int, lastXIndexTile int, zoom int) string {
 	for i := xIndex; i < lastXIndexTile; i++ {
 		tileLat := earth.Tile2lat(float64(j), zoom)
 		tileLng := earth.Tile2long(float64(i), zoom)
-		filename := earth.ComputeImages(tileLat, tileLng, zoom)
+		filename := earth.ComputeImage(tileLat, tileLng, zoom)
 		var gimGrid gim.Grid
 		gimGrid.ImageFilePath = filename
 		grids = append(grids, &gimGrid)
