@@ -3,6 +3,8 @@
 This API captures detailed images of an area
 using [Google Maps Static API](https://developers.google.com/maps/documentation/maps-static/overview)
 
+> This API is intended to be consumed by [Capture Maps UI](https://github.com/zxcV32/capture-maps-ui). However, it is may be consumed by other systems as is.
+
 ## Setup
 
 1. Create `.env` in the project root and store Google Maps Static API
