@@ -35,9 +35,9 @@ func exists(filename string) bool {
 		return false
 	} else {
 		if err != nil {
-			log.Fatal(err)
+			log.Errorln(err)
 		}
-		log.Fatalf("Unknown error occurred while verifying if the file '%s' exists", filename)
+		log.Errorln("Unknown error occurred while verifying if the file '%s' exists", filename)
 	}
 	return false
 }
@@ -51,6 +51,6 @@ func DeleteFiles(grids []*gim.Grid) {
 func DeleteFile(file string) {
 	var e = os.Remove(file)
 	if e != nil {
-		log.Fatal(e)
+		log.Errorln(e)
 	}
 }

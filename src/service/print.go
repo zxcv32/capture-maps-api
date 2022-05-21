@@ -30,43 +30,45 @@ func setupResponse(w *http.ResponseWriter) {
 }
 
 // HandleRequest print request
-func HandleRequest(writer http.ResponseWriter, request *http.Request) {
-	setupResponse(&writer)
-	if request.Method == "OPTIONS" {
-		return
-	}
-	var requestId = rand.Int()
-	log.Printf("Print request received: %d", requestId)
-	body := request.Body
-	decoder := json.NewDecoder(body)
-	var task printRequest
-	err := decoder.Decode(&task)
-	if err != nil {
-		log.Errorln(err)
-		writer.WriteHeader(500)
-		log.Printf("Print request not complete: %d", requestId)
-		return
-	}
+func PrintHandler(apiKey string) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		setupResponse(&writer)
+		if request.Method == "OPTIONS" {
+			return
+		}
+		var requestId = rand.Int()
+		log.Printf("Print request received: %d", requestId)
+		body := request.Body
+		decoder := json.NewDecoder(body)
+		var task printRequest
+		err := decoder.Decode(&task)
+		if err != nil {
+			log.Errorln(err)
+			writer.WriteHeader(500)
+			log.Printf("Print request not complete: %d", requestId)
+			return
+		}
 
-	lat, lng, zoom, radius, mapTypeId := task.Lat, task.Lng, task.Zoom, task.Radius, task.MapTypeId
-	validationError := validateRequest(lat, lng, zoom, radius, mapTypeId)
-	if validationError != nil {
-		http.Error(writer, validationError.Error(), 400)
-		return
+		lat, lng, zoom, radius, mapTypeId := task.Lat, task.Lng, task.Zoom, task.Radius, task.MapTypeId
+		validationError := validateRequest(lat, lng, zoom, radius, mapTypeId)
+		if validationError != nil {
+			http.Error(writer, validationError.Error(), 400)
+			return
+		}
+		filename := captureTiles(lat, lng, zoom, radius, mapTypeId, apiKey)
+		fileBytes, err := ioutil.ReadFile(filename)
+		if err != nil {
+			panic(err)
+		}
+		writer.WriteHeader(http.StatusOK)
+		_, error := writer.Write(fileBytes)
+		if error != nil {
+			http.Error(writer, error.Error(), 500)
+			return
+		}
+		file.DeleteFile(filename)
+		log.Printf("Print request complete: %d", requestId)
 	}
-	filename := captureTiles(lat, lng, zoom, radius, mapTypeId)
-	fileBytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
-	writer.WriteHeader(http.StatusOK)
-	_, error := writer.Write(fileBytes)
-	if error != nil {
-		http.Error(writer, error.Error(), 500)
-		return
-	}
-	file.DeleteFile(filename)
-	log.Printf("Print request complete: %d", requestId)
 }
 
 func validateRequest(lat float64, lng float64, zoom int, radius int, mapTypeId string) error {
@@ -94,7 +96,7 @@ func validateRequest(lat float64, lng float64, zoom int, radius int, mapTypeId s
 	return nil
 }
 
-func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId string) string {
+func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId string, apiKey string) string {
 	centreTileX, centreTileY, scale := earth.CalcCentreTile(lat, lng, zoom)
 	var grids []*gim.Grid
 	latitudinalTiles := min(radius*2-1, scale)
@@ -102,7 +104,7 @@ func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId stri
 	lastXIndexTile := latitudinalTiles + xIndex
 	var j = centreTileY
 	var gimGridCentre gim.Grid
-	gimGridCentre.ImageFilePath = westToEast(xIndex, j, lastXIndexTile, zoom, mapTypeId)
+	gimGridCentre.ImageFilePath = westToEast(xIndex, j, lastXIndexTile, zoom, mapTypeId, apiKey)
 
 	j = centreTileY - radius
 	repeat := radius - 1
@@ -110,7 +112,7 @@ func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId stri
 		repeat--
 		j++ // go from north to south towards centre
 		var gimGridNorth gim.Grid
-		gimGridNorth.ImageFilePath = westToEast(xIndex, j, lastXIndexTile, zoom, mapTypeId)
+		gimGridNorth.ImageFilePath = westToEast(xIndex, j, lastXIndexTile, zoom, mapTypeId, apiKey)
 		grids = append(grids, &gimGridNorth)
 	}
 
@@ -122,7 +124,7 @@ func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId stri
 		repeat--
 		j++ // go south
 		var gimGridSouth gim.Grid
-		gimGridSouth.ImageFilePath = westToEast(xIndex, j, lastXIndexTile, zoom, mapTypeId)
+		gimGridSouth.ImageFilePath = westToEast(xIndex, j, lastXIndexTile, zoom, mapTypeId, apiKey)
 		grids = append(grids, &gimGridSouth)
 	}
 
@@ -131,13 +133,13 @@ func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId stri
 	return flashbang
 }
 
-func westToEast(xIndex int, j int, lastXIndexTile int, zoom int, mapTypeId string) string {
+func westToEast(xIndex int, j int, lastXIndexTile int, zoom int, mapTypeId string, apiKey string) string {
 	var grids []*gim.Grid
 	// West to east loop
 	for i := xIndex; i < lastXIndexTile; i++ {
 		tileLat := earth.Tile2lat(float64(j), zoom)
 		tileLng := earth.Tile2long(float64(i), zoom)
-		filename := earth.ComputeImage(tileLat, tileLng, zoom, mapTypeId)
+		filename := earth.ComputeImage(tileLat, tileLng, zoom, mapTypeId, apiKey)
 		var gimGrid gim.Grid
 		gimGrid.ImageFilePath = filename
 		grids = append(grids, &gimGrid)

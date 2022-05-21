@@ -10,7 +10,7 @@ import (
 func Merge(grids []*gim.Grid, x int, y int) string {
 	rgba, err := gim.New(grids, x, y).Merge()
 	if err != nil {
-		log.Fatal(err)
+		log.Errorln(err)
 	}
 	filename := generateFilename()
 	file, err := os.Create(filename)
