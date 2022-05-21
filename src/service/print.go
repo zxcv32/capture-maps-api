@@ -71,16 +71,16 @@ func HandleRequest(writer http.ResponseWriter, request *http.Request) {
 
 func validateRequest(lat float64, lng float64, zoom int, radius int, mapTypeId string) error {
 	if lat < -90 || lat > 90 {
-		return errors.New("invalid latitude")
+		return errors.New("invalid latitude. Possible set: [-90,90]")
 	}
 	if lng < -180 || lng > 180 {
-		return errors.New("invalid longitude")
+		return errors.New("invalid longitude. Possible set: [-180,80]")
 	}
 	if zoom < 0 || zoom > 21 {
-		return errors.New("invalid zoom")
+		return errors.New("invalid zoom. Possible set: [0,21]")
 	}
 	if radius < 1 || radius > 15 {
-		return errors.New("invalid radius")
+		return errors.New("invalid radius. Possible set: [1,15]")
 	}
 	switch mapTypeId {
 	case
@@ -89,7 +89,7 @@ func validateRequest(lat float64, lng float64, zoom int, radius int, mapTypeId s
 		"roadmap",
 		"terrain":
 	default:
-		return errors.New("invalid mapTypeId")
+		return errors.New("invalid mapTypeId. Possible values: hybrid,satellite,roadmap,terrain")
 	}
 	return nil
 }
