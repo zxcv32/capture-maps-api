@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	gim "github.com/ozankasikci/go-image-merge"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -48,6 +49,11 @@ func HandleRequest(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	lat, lng, zoom, radius, mapTypeId := task.Lat, task.Lng, task.Zoom, task.Radius, task.MapTypeId
+	validationError := validateRequest(lat, lng, zoom, radius, mapTypeId)
+	if validationError != nil {
+		http.Error(writer, validationError.Error(), 400)
+		return
+	}
 	filename := captureTiles(lat, lng, zoom, radius, mapTypeId)
 	fileBytes, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -61,6 +67,31 @@ func HandleRequest(writer http.ResponseWriter, request *http.Request) {
 	}
 	file.DeleteFile(filename)
 	log.Printf("Print request complete: %d", requestId)
+}
+
+func validateRequest(lat float64, lng float64, zoom int, radius int, mapTypeId string) error {
+	if lat < -90 || lat > 90 {
+		return errors.New("invalid latitude")
+	}
+	if lng < -180 || lng > 180 {
+		return errors.New("invalid longitude")
+	}
+	if zoom < 0 || zoom > 21 {
+		return errors.New("invalid zoom")
+	}
+	if radius < 1 || radius > 15 {
+		return errors.New("invalid radius")
+	}
+	switch mapTypeId {
+	case
+		"hybrid",
+		"satellite",
+		"roadmap",
+		"terrain":
+	default:
+		return errors.New("invalid mapTypeId")
+	}
+	return nil
 }
 
 func captureTiles(lat float64, lng float64, zoom int, radius int, mapTypeId string) string {
