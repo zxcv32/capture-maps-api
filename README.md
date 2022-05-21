@@ -8,14 +8,17 @@ using [Google Maps Static API](https://developers.google.com/maps/documentation/
 ## Setup
 
 1. Create `.env` in the project root and store Google Maps Static API
+
    `API_KEY=<YOUR API_KEY>`
 2. Run project
+
    `go run src/main.go`
 
 ## Sample request
 
 ```http request
 POST /print
+Content-Type: application/json
 
 {
     "lat": 30.316963, 
@@ -29,13 +32,17 @@ POST /print
 
 ![sample response](./assets/response.png)
 
+```http response
+Access-Control-Allow-Origin: http://localhost:3000
+Content-Type: image/png
+Transfer-Encoding: chunked
+```
+
 > What about the watermark?
 > According to [Google Maps Platform Terms of Service](https://cloud.google.com/maps-platform/terms),
 > the branding, logos, and copyright and trademark notices can not be removed. :'(
 
 ## How does it work?
-
-> TODO explain
 
 1. Latitude and longitudes are converted to Google maps tile coordinates (the first tile is the
    centre)
