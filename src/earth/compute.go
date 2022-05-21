@@ -12,13 +12,13 @@ const TileSize = 256 // Map image pixels
 const TileScale = 2  // Tile pixel multiplier
 
 // ComputeImage Retrieve the tiled image from the input latitude and longitude
-func ComputeImage(lat float64, lng float64, zoom int) string {
+func ComputeImage(lat float64, lng float64, zoom int, mapTypeId string) string {
 	if err := godotenv.Load(); err != nil {
 		log.Errorln("No .env file found")
 	}
 	key := os.Getenv("API_KEY")
 	URL := fmt.Sprintf("https://maps.googleapis.com/maps/api/staticmap?center=%f,%f&key=%s&zoom=%d&size=%dx%d&scale=%d&maptype=%s&region=%s",
-		lat, lng, key, zoom, TileSize, TileSize, TileScale, "hybrid", "IN")
+		lat, lng, key, zoom, TileSize, TileSize, TileScale, mapTypeId, "IN")
 	filename, err := file.DownloadImage(URL)
 	if err != nil {
 		log.Fatal(err)
