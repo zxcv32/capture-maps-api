@@ -33,7 +33,7 @@ Content-Type: application/json
 ![sample response](./assets/response.png)
 
 ```http response
-Access-Control-Allow-Origin: http://localhost:3000
+Access-Control-Allow-Origin: *
 Content-Type: image/png
 Transfer-Encoding: chunked
 ```
