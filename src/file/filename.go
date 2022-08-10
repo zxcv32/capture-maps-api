@@ -37,7 +37,7 @@ func exists(filename string) bool {
 		if err != nil {
 			log.Errorln(err)
 		}
-		log.Errorln("Unknown error occurred while verifying if the file '%s' exists", filename)
+		log.Errorf("Unknown error occurred while verifying if the file '%s' exists", filename)
 	}
 	return false
 }
