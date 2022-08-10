@@ -16,12 +16,12 @@ func main() {
 	if len(apiKey) == 0 {
 		log.Fatalln("Google Maps API Key not set")
 	}
-	http.HandleFunc("/", home)
+	http.HandleFunc("/", Home)
 	http.HandleFunc("/print", service.PrintHandler(apiKey))
 
 	http.ListenAndServe(":8090", nil)
 }
 
-func home(writer http.ResponseWriter, request *http.Request) {
+func Home(writer http.ResponseWriter, request *http.Request) {
 	http.Redirect(writer, request, "http://zxcv32.com", 301)
 }
