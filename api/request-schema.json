@@ -1,0 +1,33 @@
+{
+    "title": "Capture Maps API Request Schema",
+    "type": "object",
+    "properties": {
+      "lat": {
+        "type": "number",
+        "description": "GPS latitude in decimal degrees with maximum 6 decimal digits precision"
+      },
+      "lng": {
+        "type": "number",
+        "description": "GPS longitude in decimal degrees with maximum 6 decimal digits precision"
+      },
+      "zoom": {
+        "type": "integer",
+        "description": "Google maps detail zoom level between [0,21]"
+      },
+      "radius": {
+        "type": "integer",
+        "description": "Number of image tiles from centre [1,15]"
+      },
+      "mapTypeId": {
+        "type": "string",
+        "description": "Google maps type [hybrid,satellite,roadmap,terrain]"
+      }
+    },
+    "required": [
+      "lat",
+      "lng",
+      "zoom",
+      "radius",
+      "mapTypeId"
+    ]
+  }

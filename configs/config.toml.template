@@ -1,0 +1,9 @@
+title = "Capture Maps API Configuration"
+version = "0.0.1"
+
+[server]
+port = 8090
+redirect = "http://zxcv32.com/zxcV32/capture-maps-api"
+
+[google-maps]
+api_key = ""
