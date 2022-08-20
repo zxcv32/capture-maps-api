@@ -1,16 +1,18 @@
-FROM golang:1.18 AS build
-WORKDIR /capture/
-COPY go.mod /capture/
-COPY go.sum /capture/
+FROM golang:1.19 AS build
+WORKDIR /app/
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
-COPY src/ /capture/src
-RUN CGO_ENABLED=0 GOOS=linux go build -installsuffix cgo -tags=nomsgpack -a -o app ./src
+COPY cmd/ cmd
+COPY internal/ internal
+COPY pkg/ pkg
+RUN CGO_ENABLED=0 GOOS=linux go build -installsuffix cgo -tags=nomsgpack -a -o bin/capturemapsapi cmd/capturemapsapi/main.go
 
 FROM alpine:3
 LABEL NAME="capture-maps-api"
-WORKDIR /capture
+WORKDIR /app
 ENV GIN_MODE=release
 EXPOSE 8090
-COPY --from=build /capture/app ./
-# Please specify at least INFLUXDB_ORG and INFLUXDB_TOKEN at runtime
-CMD ["./app"]
+COPY configs/config.toml.template configs/config.toml
+COPY --from=build /app/bin/capturemapsapi ./
+CMD ["./capturemapsapi"]

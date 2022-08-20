@@ -7,9 +7,11 @@ using [Google Maps Static API](https://developers.google.com/maps/documentation/
 
 ## Setup
 
-1. Create `.env` in the project root and store Google Maps Static API
+1. Create `configs/config.toml` in the project root and store Google Maps Static API
 
-   `API_KEY=<YOUR API_KEY>`
+   ```bash
+   cd configs/; cp config.toml.template config.toml
+   ```
 2. Run project
 
    `go run src/main.go`
@@ -30,7 +32,7 @@ Content-Type: application/json
 
 ## Sample Response
 
-![sample response](./assets/response.png)
+![sample response](./docs/assets/response.png)
 
 ```http response
 Access-Control-Allow-Origin: *
@@ -56,9 +58,9 @@ Transfer-Encoding: chunked
 For example, the centre row of the complete grid consists individual tiles collected from west to
 east with length `2 * radius - 1`
 
-| c1 | c2 | c3 | c4                  | c5 | c6 | c7 | c8                  | c9 |
-|-----|-----|-----|---------------------|-----|-----|-----|---------------------|-----|
-|   ![](assets/c1.png)  |   ![](assets/c2.png)  |  ![](assets/c3.png)   | ![](assets/c4.png)  |   ![](assets/c5.png)  | ![](assets/c6.png) | ![](assets/c7.png) | ![](assets/c8.png)  | ![](assets/c9.png) |
+| c1 | c2 | c3 | c4 | c5 | c6 | c7 | c8 | c9 |
+|---|---|---|---|---|---|---|---|---|
+|   ![](docs/assets/c1.png)  |   ![](docs/assets/c2.png)  |  ![](docs/assets/c3.png)   | ![](docs/assets/c4.png)  |   ![](docs/assets/c5.png)  | ![](docs/assets/c6.png) | ![](docs/assets/c7.png) | ![](docs/assets/c8.png)  | ![](docs/assets/c9.png) |
 
 After stitching the tiles we get the centre row
-![](assets/merge.png)
+![](docs/assets/merge.png)
