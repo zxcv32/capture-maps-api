@@ -1,9 +1,9 @@
 version: "3"
 services:
   capture-maps-api:
-    build: "../"
+    image: ghcr.io/zxcv32/capture-maps-api:main
     restart: unless-stopped
     ports:
-      - 8090:8090
+      - 9002:8090
     environment: 
       GOOGLE_MAPS_API_KEY: "<GOOGLE_MAPS_API_KEY>"

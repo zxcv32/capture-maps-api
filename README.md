@@ -16,6 +16,20 @@ using [Google Maps Static API](https://developers.google.com/maps/documentation/
 
    `go run src/main.go`
 
+### Docker Dev
+Set `GOOGLE_MAPS_API_KEY` in deploy/docker-compose.yml
+```bash
+cd deploy
+docker compose up --build -d
+```
+
+### Docker Dev
+Set `GOOGLE_MAPS_API_KEY` in deploy/docker-compose.prod.yml
+```bash
+cd deploy
+docker compose -f docker-compose.prod.yml up -d
+```
+
 ## Sample request
 
 ```http request
